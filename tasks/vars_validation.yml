@@ -2,8 +2,8 @@
 - name: Fail if not Ubuntu 20.04
   set_fact:
     distro: "{{ ansible_distribution }}"
-  when: distro != "Ubuntu"
-  failed_when: distro != "Ubuntu"
+  when: ansible_os_family != 'Debian'
+  failed_when: ansible_os_family != 'Debian'
 
 - name: Fail if fullnode and archive are both set to true.
   fail:
@@ -15,19 +15,14 @@
 - name: Fail if radix_network_id is not set to 'S' or 'M'.
   fail:
     msg: "Variable radix_network_id must be set to 'S' or 'M'."
-  when: radix_network_id is not in ["S", "M"]
-
-- name: Fail if install_mode is not set to 'docker' or 'systemd'.
-  fail:
-    msg: "Variable install_mode must be set to 'docker' or 'systemd'."
-  when: install_mode is not in ["docker", "systemd"]
+  when: radix_network_id is not in ["s", "m"]
 
 - name: Fail if radix_node_region is not set to 'eu-west', 'asia-south', 'asia-south-east', 'eu-west', or 'us-east'.
   fail:
     msg: "Variable 'radix_node_region' must be set to 'eu-west', 'asia-south', 'asia-south-east', 'eu-west', or 'us-east'."
   when: radix_node_region is not in ["eu-west", "asia-south", "asia-south-east", "eu-west", "us-east"]
 
-- name: Fail if docker_install is set to 'yes' and 'systemd_install' is set to 'yes'.
+- name: Fail if docker_install is true and 'systemd_install' is true.
   fail:
     msg: "Variable 'docker_install' and 'systemd_install' cannot both be set to 'true'."
   when: 
