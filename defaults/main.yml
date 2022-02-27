@@ -1,2 +1,32 @@
 ---
 # defaults file for radix-node-configurator
+docker_install: true
+systemd_install: false
+
+# Update settings, if set to 'true', Ansible will update all Radix packages to latest version. If not, it will just make sure they are present.
+update_radix: true
+update_ubuntu: true
+
+# Show docker/systemd output
+debug_output: true
+
+data_dir: "/opt/radix"
+radix_user: "radixdlt"
+
+ufw_firewall: true
+iptables_firewall: false
+
+# Valid regions are: eu-west, asia-south, asia-south-east, eu-west, or us-east.
+radix_node_region: "eu-west"
+
+# Valid argyments are: "S" for stokenet or "M" for mainnet. 
+radix_network_id: "m"
+
+# Set nodetype
+fullnode: true
+archive: false
+
+new_node: yes
+
+# Must be set if new_node is set to "no"
+keystore_password:

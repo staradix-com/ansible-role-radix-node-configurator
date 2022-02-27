@@ -1,2 +1,35 @@
 ---
 # vars file for radix-node-configurator
+compose_url: "https://raw.githubusercontent.com/radixdlt/node-runner/1.1.1/node-runner-cli/release_ymls/radix-fullnode-compose.yml"
+
+keystore_container_version: "1.1.0"
+keystore_htpasswd_version: "v1.0.0"
+
+# Nodes
+# Asia Pacific
+radix_node_asia_pacific: "radix://rn1q2jt0jswv3lpct8tavr5tvlg2kv25f26x7w8kf6dz2hp4pu9cwq4we9tm5f@13.238.198.54"
+
+# Asia Pacific South
+radix_node_asia_pacific_south: "radix://rn1qgf0tug4nmxfa7su8zsu8pejzq48eeglvxf8le09cuy0nsghzg44weacz2q@3.109.36.249"
+
+# EU West
+radix_node_eu_west: "radix://rn1q2jt0jswv3lpct8tavr5tvlg2kv25f26x7w8kf6dz2hp4pu9cwq4we9tm5f@13.238.198.54"
+
+# US East
+radix_node_us_east: ""
+
+packages:
+  - "apt-transport-https"
+  - "ca-certificates"
+  - "curl"
+  - "software-properties-common"
+  - "pwgen"
+  - "acl"
+
+radix_packages:
+  - "docker.io"
+  - "docker-compose"
+  - "wget"
+  - "unzip" 
+  - "docker-compose" 
+  - "rng-tools"
