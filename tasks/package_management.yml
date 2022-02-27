@@ -16,6 +16,10 @@
     name: "{{ packages }}"
     state: latest
 
+- name: Install reccomended packages
+  apt:
+    install_recommends: yes
+
 - name: Ensure Radix packages are installed
   apt:
     name: "{{ radix_packages }}"
