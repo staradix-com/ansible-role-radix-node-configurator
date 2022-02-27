@@ -2,25 +2,31 @@ Vagrant.configure("2") do |config|
 
     config.vm.box = "ubuntu/focal64"
   
-    config.vm.synced_folder ".", "/vagrant/radix-node-configurator"
-    config.vm.synced_folder "/home/fluit/ansible-tmp", "/vagrant"
+    config.vm.synced_folder ".", "/vagrant/roles/radix-node-configurator"
   
     config.vm.provider "virtualbox" do |v|
       v.memory = 2048
       v.cpus = 2
     end
 
-    config.vm.disk :disk, name: "/opt/radix", size: "200GB"
-    config.vm.network "public_network", bridge: 'enp5s0', ip: '192.168.178.187'
+    config.vm.disk :disk, name: "/opt/radixdlt", size: "100GB"
 
     $script = <<-SCRIPT
     sudo apt-get update
     sudo apt-get install -y software-properties-common
     sudo apt-add-repository ppa:ansible/ansible -y
-    sudo apt-get install -y ansible
+    sudo apt-get install -y ansible python3-pip ca-certificates curl gnupg lsb-release
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+    $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    sudo apt-get update && sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+    sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    sudo chmod +x /usr/local/bin/docker-compose && sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+    cd /vagrant/roles/radix-node-configurator && pip3 install -r requirements.txt
+    sudo cp /vagrant/roles/radix-node-configurator/tests/*  /vagrant
+    cd /vagrant && ansible-playbook test.yml -i inventory
     SCRIPT
 
     config.vm.provision "shell", inline: $script, privileged: false
 
   end
-  
