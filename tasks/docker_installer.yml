@@ -2,7 +2,7 @@
 # Run basic preps for the installation
 - name: Ensure radix_user directory exists in radix_user homedir
   ansible.builtin.file:
-    path: "{{ radix_home }}/{{ radix_user }}"
+    path: "/home{{ radix_user }}/{{ radix_user }}"
     state: directory
     mode: '0640'
     owner: "{{ radix_user }}"
@@ -10,7 +10,7 @@
 
 - name: Ensure radix_user directory exists in radix_user homedir
   ansible.builtin.file:
-    path: "{{ radix_home }}/node-config"
+    path: "/home{{ radix_user }}/node-config"
     state: directory
     mode: '0640'
     owner: "{{ radix_user }}"
@@ -19,7 +19,7 @@
 - name: Download docker-compose file
   get_url:
     url: "{{ compose_url }}"
-    dest: "{{ radix_home }}/{{ radix_user }}/radix-fullnode-compose.yml"
+    dest: "/home{{ radix_user }}/{{ radix_user }}/radix-fullnode-compose.yml"
     mode: '0640'
     owner: "{{ radix_user }}"
     group: "{{ radix_user }}"
@@ -30,7 +30,7 @@
     keep_volumes: no
     detach: yes
     volumes: 
-      - "{{ radix_home }}/{{radix_user}}:/keygen/key"
+      - "/home{{ radix_user }}/{{radix_user}}:/keygen/key"
     image: "radixdlt/keygen:{{ keystore_container_version }}"
     command: ["--keystore=/keygen/key/node-keystore.ks", "--password={{ radix_keystore_password }}"]
   when: 
@@ -48,7 +48,7 @@
 
 - name: Set 0644 permissions on keystore file
   ansible.builtin.file:
-    path: "{{ radix_home }}/{{ radix_user }}/node-keystore.ks"
+    path: "/home{{ radix_user }}/{{ radix_user }}/node-keystore.ks"
     state: file
     mode: '0644'
     owner: "{{ radix_user }}"
@@ -56,7 +56,7 @@
 
 - name: Set 0644 permissions on keystore file
   ansible.builtin.file:
-    path: "{{ radix_home }}/node-config"
+    path: "/home{{ radix_user }}/node-config"
     state: directory
     mode: '0644'
     owner: "{{ radix_user }}"
@@ -64,8 +64,8 @@
 
 - name: Create a symbolic link
   ansible.builtin.file:
-    src: "{{ radix_home }}/{{ radix_user }}/node-keystore.ks"
-    dest: "{{ radix_home }}/node-config/node-keystore.ks"
+    src: "/home{{ radix_user }}/{{ radix_user }}/node-keystore.ks"
+    dest: "/home{{ radix_user }}/node-config/node-keystore.ks"
     owner: "{{ radix_user }}"
     group: "{{ radix_user }}"
     state: link
@@ -106,6 +106,6 @@
 
 - name: Run `docker-compose up` again
   community.docker.docker_compose:
-    project_src: "{{ radix_home }}/{{ radix_user }}"
+    project_src: "/home{{ radix_user }}/{{ radix_user }}"
     build: no
   register: output
