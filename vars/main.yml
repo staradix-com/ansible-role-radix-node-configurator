@@ -29,6 +29,7 @@ packages:
 radix_packages:
   - "docker.io"
   - "docker-compose"
+  - "containerd"
   - "wget"
   - "unzip" 
   - "docker-compose" 
