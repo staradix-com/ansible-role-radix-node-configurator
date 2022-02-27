@@ -1,0 +1,17 @@
+---
+- name: Make sure the Radix directory is present
+  ansible.builtin.file:
+    path: "{{ data_dir }}"
+    state: directory
+    mode: '0640'
+    owner: "{{ radix_user }}"
+    group: "{{ radix_user }}"
+  when: data_dir is defined
+
+- name: Check data_dir freespace
+  shell: df {{ data_dir }} --output\=avail | tail -1
+  register: dir_freespace
+      
+- fail:
+    msg: "{{ data_dir }} does not have the minimum space required to continue." 
+  when: dir_freespace.stdout | float is lt 1000000000

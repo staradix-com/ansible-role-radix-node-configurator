@@ -1,0 +1,35 @@
+# get packages
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  when: ansible_os_family == 'Debian'
+
+- name: Ensure packages are installed using apt
+  apt:
+    name: "{{ packages }}"
+    state: present
+  when:
+    - not update_ubuntu
+  when: ansible_os_family == 'Debian'
+
+- name: Ensure packages are in latest state
+  apt:
+    name: "{{ packages }}"
+    state: latest
+  when: ansible_os_family == 'Debian'
+
+- name: Ensure Radix packages are installed
+  apt:
+    name: "{{ radix_packages }}"
+    state: present
+  when:
+    - not update_radix
+  when: ansible_os_family == 'Debian'
+
+- name: Ensure Radix packages are in latest state
+  apt:
+    name: "{{ radix_packages }}"
+    state: latest
+  when:
+    - update_radix

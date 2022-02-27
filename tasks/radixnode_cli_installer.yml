@@ -1,0 +1,20 @@
+# Make sure there is no old package
+- name: Make sure there is no old package in /tmp
+  file:
+    path: "/tmp/radixnode"
+    state: absent
+
+- name: Run command to download the package
+  shell: curl -s https://api.github.com/repos/radixdlt/node-runner/releases/latest | grep browser_download_url | cut -d '"' -f 4 | xargs curl -L -o /tmp/radixnode
+
+# Move the package
+- name: Move package to /usr/local/bin
+  copy:
+    src: "/tmp/radixnode"
+    dest: "/usr/local/bin/radixnode"
+    mode: "a+x"
+
+- name: Make sure there is no old package in /tmp
+  file:
+    path: "/tmp/radixnode"
+    state: absent

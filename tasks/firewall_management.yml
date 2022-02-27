@@ -1,0 +1,19 @@
+# Configure firewall
+- name: Open port 443 and 30000 for radix node using UFW
+  community.general.ufw:
+    rule: allow
+    port: '{{ item }}'
+  loop:
+    - 443
+    - 30000
+  when: ufw_firewall
+
+- name: Open port 443 and 30000 for radix node using iptables
+  ansible.builtin.iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_ports:
+      - 443
+      - 30000
+    jump: ACCEPT
+  when: iptables_firewall

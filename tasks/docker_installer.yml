@@ -1,0 +1,111 @@
+---
+# Run basic preps for the installation
+- name: Ensure radix_user directory exists in radix_user homedir
+  ansible.builtin.file:
+    path: "{{ radix_home }}/{{ radix_user }}"
+    state: directory
+    mode: '0640'
+    owner: "{{ radix_user }}"
+    group: "{{ radix_user }}"
+
+- name: Ensure radix_user directory exists in radix_user homedir
+  ansible.builtin.file:
+    path: "{{ radix_home }}/node-config"
+    state: directory
+    mode: '0640'
+    owner: "{{ radix_user }}"
+    group: "{{ radix_user }}"
+
+- name: Download docker-compose file
+  get_url:
+    url: "{{ compose_url }}"
+    dest: "{{ radix_home }}/{{ radix_user }}/radix-fullnode-compose.yml"
+    mode: '0640'
+    owner: "{{ radix_user }}"
+    group: "{{ radix_user }}"
+  
+- name: Create node-keystore.ks file
+  docker_container:
+    name: radix_keystore
+    keep_volumes: no
+    detach: yes
+    volumes: 
+      - "{{ radix_home }}/{{radix_user}}:/keygen/key"
+    image: "radixdlt/keygen:{{ keystore_container_version }}"
+    command: ["--keystore=/keygen/key/node-keystore.ks", "--password={{ radix_keystore_password }}"]
+  when: 
+    - keystore_password is not defined
+    - new_node == "yes"
+
+- name: Create node-keystore.ks file
+  docker_container:
+    name: radix_keystore
+    keep_volumes: no
+    detach: yes
+    image: "radixdlt/keygen:{{ keystore_container_version }}"
+    command: ["--keystore=/keygen/key/node-keystore.ks", "--password={{ keystore_password }}"]
+  when: keystore_password is defined
+
+- name: Set 0644 permissions on keystore file
+  ansible.builtin.file:
+    path: "{{ radix_home }}/{{ radix_user }}/node-keystore.ks"
+    state: file
+    mode: '0644'
+    owner: "{{ radix_user }}"
+    group: "{{ radix_user }}"
+
+- name: Set 0644 permissions on keystore file
+  ansible.builtin.file:
+    path: "{{ radix_home }}/node-config"
+    state: directory
+    mode: '0644'
+    owner: "{{ radix_user }}"
+    group: "{{ radix_user }}"
+
+- name: Create a symbolic link
+  ansible.builtin.file:
+    src: "{{ radix_home }}/{{ radix_user }}/node-keystore.ks"
+    dest: "{{ radix_home }}/node-config/node-keystore.ks"
+    owner: "{{ radix_user }}"
+    group: "{{ radix_user }}"
+    state: link
+
+# Add passwords for new install
+- name: Add nginx-admin-password
+  docker_container:
+    name: radix_keystore_admin
+    keep_volumes: no
+    detach: yes
+    volumes: 
+      - "radixdlt_nginx_secrets:/secrets"
+    image: "radixdlt/htpasswd:{{ keystore_htpasswd_version }}"
+    command: ["htpasswd", "-bc", "/secrets/htpasswd.admin", "admin", "{{ radix_nginx_password }}"]
+  when: new_node == "yes"
+
+- name: Add nginx-superadmin-password
+  docker_container:
+    name: radix_keystore_super_admin
+    keep_volumes: no
+    detach: yes
+    volumes: 
+      - "radixdlt_nginx_secrets:/secrets"
+    image: "radixdlt/htpasswd:{{ keystore_htpasswd_version }}"
+    command: ["htpasswd", "-bc", "/secrets/htpasswd.superadmin", "superadmin", "{{ radix_nginx_superadmin_password }}"]
+  when: new_node == "yes"
+
+- name: Add nginx-metrics-password
+  docker_container:
+    name: radix_keystore_super_admin
+    keep_volumes: no
+    detach: yes
+    volumes: 
+      - "radixdlt_nginx_secrets:/secrets"
+    image: "radixdlt/htpasswd:{{ keystore_htpasswd_version }}"
+    command: ["htpasswd", "-bc", "/secrets/htpasswd.metrics", "metrics", "{{ radix_metrics_password }}"]
+  when: new_node == "yes"
+
+- name: Run `docker-compose up` again
+  community.docker.docker_compose:
+    project_src: "{{ radix_home }}/{{ radix_user }}"
+    build: no
+  register: output

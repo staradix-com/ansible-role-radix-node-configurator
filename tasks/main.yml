@@ -1,2 +1,34 @@
 ---
-# tasks file for radix-node-configurator
+# Run tasks
+- name: Run checks on all variables
+  include_tasks: "vars_validation.yml"
+
+- name: Run all package management tasks
+  include_tasks: "package_management.yml"
+
+- name: Run all firewall management tasks
+  include_tasks: "firewall_management.yml"
+ 
+- name: Run all password management tasks
+  include_tasks: "password_management.yml"
+
+- name: Run the user management related tasks
+  include_tasks: "user_management.yml"
+
+- name: Run tasks to make the radixnode binary available on the host.
+  include_tasks: "radixnode_cli_installer.yml"
+
+- name: Run volume checks to make sure we meet the minimum requirements
+  include_tasks: "volume_management.yml"
+
+# Run install based on set variables
+- name: Run Docker installer if variable is set to Docker
+  include_tasks: "docker_installer.yml"
+  when: docker_install
+
+- name: Run systemd installer if variable is set to Systemd
+  include_tasks: "systemd_installer.yml"
+  when: systemd_install
+
+# run the service
+# register?
