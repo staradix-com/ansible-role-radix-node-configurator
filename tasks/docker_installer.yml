@@ -21,7 +21,7 @@
     owner: "{{ radix_user }}"
     group: "{{ radix_user }}"
   
-- name: Create node-keystore.ks file
+- name: Create node-keystore.ks file when keystore_password is NOT defined
   docker_container:
     name: radix_keystore
     keep_volumes: no
@@ -34,7 +34,7 @@
     - keystore_password is not defined
     - new_node == "yes"
 
-- name: Create node-keystore.ks file
+- name: Create node-keystore.ks file when keystore_password IS defined
   docker_container:
     name: radix_keystore
     keep_volumes: no
@@ -44,30 +44,6 @@
     image: "radixdlt/keygen:{{ keystore_container_version }}"
     command: ["--keystore=/keygen/key/node-keystore.ks", "--password={{ radix_keystore_password }}"]
   when: keystore_password is defined
-
-- name: Set 0644 permissions on keystore file
-  ansible.builtin.file:
-    path: "/home/{{ radix_user }}/radixdlt/node-keystore.ks"
-    state: file
-    mode: '0644'
-    owner: "{{ radix_user }}"
-    group: "{{ radix_user }}"
-
-- name: Set 0644 permissions on keystore file
-  ansible.builtin.file:
-    path: "/home/{{ radix_user }}/node-config"
-    state: directory
-    mode: '0644'
-    owner: "{{ radix_user }}"
-    group: "{{ radix_user }}"
-
-- name: Create a symbolic link
-  ansible.builtin.file:
-    src: "/home/{{ radix_user }}/radixdlt/node-keystore.ks"
-    dest: "/home/{{ radix_user }}/node-config/node-keystore.ks"
-    owner: "{{ radix_user }}"
-    group: "{{ radix_user }}"
-    state: link
 
 # Add passwords for new install
 - name: Add nginx-admin-password
@@ -103,6 +79,25 @@
     command: ["htpasswd", "-bc", "/secrets/htpasswd.metrics", "metrics", "{{ radix_metrics_password }}"]
   when: new_node == "yes"
 
+- name: Set 0644 permissions on keystore file
+  ansible.builtin.file:
+    path: "/home/{{ radix_user }}/radixdlt/node-keystore.ks"
+    state: file
+    mode: '0644'
+
+- name: Set 0644 permissions on keystore file
+  ansible.builtin.file:
+    path: "/home/{{ radix_user }}/node-config"
+    state: directory
+    mode: '0644'
+
+- name: Create a symbolic link
+  ansible.builtin.file:
+    src: "/home/{{ radix_user }}/radixdlt/node-keystore.ks"
+    dest: "/home/{{ radix_user }}/node-config/node-keystore.ks"
+    state: link
+  when: new_node == "yes"
+
 - name: Run `docker-compose up`
   community.docker.docker_compose:
     project_src: "/home/{{ radix_user }}/radixdlt"
@@ -111,3 +106,4 @@
   register: output
   become: yes
   become_user: root
+  when: new_node == "yes"
