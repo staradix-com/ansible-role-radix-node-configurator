@@ -26,7 +26,7 @@ radix_network_id: "m"
 fullnode: true
 archive: false
 
-new_node: yes
+new_node: "yes"
 
 # Must be set if new_node is set to "no"
 keystore_password:
