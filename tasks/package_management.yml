@@ -41,8 +41,13 @@
     state: present
   delegate_to: localhost
 
-- name: Ensure pip packages are present
+- name: Ensure pip packages are present on localhost
   pip:
     name: "{{ pip_packages }}"
     state: present
   delegate_to: localhost
+
+- name: Ensure pip packages are present on radix-node.
+  pip:
+    name: "{{ pip_packages }}"
+    state: present
