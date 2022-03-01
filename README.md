@@ -48,4 +48,4 @@ Author Information
 ------------------
 
 * info@staradix.com
-* http://staradix.com
+* https://staradix.com
