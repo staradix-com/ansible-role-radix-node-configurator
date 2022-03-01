@@ -1,3 +1,4 @@
-docker-compose
 docker
-PyYAML
+requests
+pyyaml
+docker-py
