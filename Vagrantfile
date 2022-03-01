@@ -31,7 +31,7 @@ Vagrant.configure("2") do |config|
     sudo cp /vagrant/roles/radix-node-configurator/tests/*  /vagrant
 
     # Add user to Docker group, make sure Docker is started
-    sudo usermod -aG docker vagrant && su - "${USER}"
+    sudo usermod -aG docker vagrant && exec sudo su -l $USER
     sudo systemctl enable docker --now && \
 
     # Run the playbook
