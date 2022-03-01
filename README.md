@@ -1,7 +1,8 @@
 Radix Node Configurator
 =========
 
-Configures a Radix node
+Configures a Radix node.  
+This is a work in progress. NOT READY FOR PRODUCTION USE.
 
 Requirements
 ------------
