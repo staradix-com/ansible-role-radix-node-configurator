@@ -11,8 +11,12 @@ You can try different versions but this is not recommended.
 Radix itself only supports Ubuntu 20.04.  
 This repo will not work on other distros.  
 
+Installing the role
+------------
+* `ansible-galaxy install stefanfluit.ansible_role_radix_node_configurator`
+
 Role Variables
---------------
+------------
 Good to know: A boolean means that valid values are `true` or `false`.
 
 The docker_install boolean (true/false) controls whether the docker install method will be used, or not.
@@ -69,7 +73,8 @@ Dependencies
 
 Example Playbook
 ----------------
-* You can find an example playbook the `tests` directory.  
+* You can find an example playbook the `tests` directory.
+* `tests/ansible-playbook.yml`
 
 
 Local role testing
