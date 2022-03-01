@@ -1,9 +1,9 @@
 galaxy_info:
   author: Stefan Fluit
   description: Ansible role to configure a Radix fullnode/archive node via Docker or SystemD.
-  company: fluit-online.nl
+  company: Staradix
 
-  license: BSD-3-Clause
+  license: GPL-2.0-or-later
 
   min_ansible_version: 2.9
 
