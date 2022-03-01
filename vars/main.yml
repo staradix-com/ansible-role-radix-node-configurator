@@ -25,6 +25,7 @@ packages:
   - "software-properties-common"
   - "pwgen"
   - "acl"
+  - "python3-pip"
 
 radix_packages:
   - "docker.io"
@@ -34,3 +35,9 @@ radix_packages:
   - "unzip" 
   - "docker-compose" 
   - "rng-tools"
+
+pip_packages:
+  - "docker"
+  - "requests"
+  - "pyyaml"
+  - "docker-py"

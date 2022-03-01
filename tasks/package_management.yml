@@ -33,3 +33,8 @@
     state: latest
   when:
     - update_radix
+
+- name: Ensure pip packages are present
+  pip:
+    name: "{{ pip_packages }}"
+    state: present

@@ -19,8 +19,7 @@ Vagrant.configure("2") do |config|
 
       ansible-galaxy install geerlingguy.docker
       ansible localhost -m include_role -a name=geerlingguy.docker
-
-      cd /vagrant/roles/radix-node-configurator && pip3 install -r requirements.txt
+      
       sudo cp /vagrant/roles/radix-node-configurator/tests/*  /vagrant
       cd /vagrant && ansible-playbook test.yml -i inventory.yml
     SCRIPT
