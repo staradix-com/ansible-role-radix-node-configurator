@@ -19,7 +19,7 @@ iptables_firewall: false
 # Valid regions are: eu-west, asia-south, asia-south-east, eu-west, or us-east.
 radix_node_region: "eu-west"
 
-# Valid argyments are: "S" for stokenet or "M" for mainnet. 
+# Valid argyments are: "s" for stokenet or "m" for mainnet. 
 radix_network_id: "m"
 
 # Set nodetype
