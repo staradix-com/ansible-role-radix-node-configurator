@@ -4,8 +4,8 @@ Vagrant.configure("2") do |config|
     config.vm.synced_folder ".", "/vagrant/roles/radix-node-configurator"
   
     config.vm.provider "virtualbox" do |v|
-      v.memory = 2048
-      v.cpus = 2
+      v.memory = 4096
+      v.cpus = 4
       v.name = "radix-node-configurator"
     end
 
@@ -16,7 +16,8 @@ Vagrant.configure("2") do |config|
       sudo sh get-docker.sh
       curl -s -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
       chmod +x /usr/local/bin/docker-compose && ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-      usermod -aG docker vagrant && systemctl enable docker --now
+      usermod -aG docker vagrant && usermod -aG docker vagrant && \
+      systemctl enable docker --now
     SCRIPT
 
     $script = <<-SCRIPT
