@@ -23,24 +23,26 @@ The systemd_install boolean (true/false) controls whether the systemd install me
 
 Dependencies
 ------------
-
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+You can find all dependencies in the requirements.txt file.  
+Install them with: `pip3 install -r requirements.txt`
 
 Example Playbook
 ----------------
+You can find an example playbook the `tests` directory.  
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+Local role testing
+-------
+You can test the role with Vagrant and VirtualBox. Both need to be installed.  
+The command is: `VAGRANT_EXPERIMENTAL="cloud_init,disks" vagrant up`
 
 License
 -------
 
-BSD
+* GPLv2
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+* info@staradix.com
+* http://staradix.com
