@@ -34,7 +34,15 @@
   when:
     - update_radix
 
+- name: Ensure pip3 is available
+  apt:
+    name: "python3-pip"
+    update_cache: yes
+    state: present
+  delegate_to: localhost
+
 - name: Ensure pip packages are present
   pip:
     name: "{{ pip_packages }}"
     state: present
+  delegate_to: localhost
