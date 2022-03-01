@@ -26,7 +26,7 @@ Vagrant.configure("2") do |config|
     cd /vagrant/roles/radix-node-configurator && pip3 install -r requirements.txt
     sudo cp /vagrant/roles/radix-node-configurator/tests/*  /vagrant
     sudo usermod -aG docker vagrant
-    cd /vagrant && ansible-playbook test.yml -i inventory
+    cd /vagrant && ansible-playbook test.yml -i inventory.yml
     SCRIPT
 
     config.vm.provision "shell", inline: $script, privileged: false
