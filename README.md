@@ -1,21 +1,18 @@
 Radix Node Configurator
 =========
-
 Configures a Radix node.  
 This is a work in progress. NOT READY FOR PRODUCTION USE.
 
 Requirements
 ------------
-
-* Docker API >= 1.20
-* Docker SDK for Python >= 1.8.0
-* PyYAML >= 3.11
-* docker-compose >= 1.7.0, < 2.0.0
-* Ansible >= 2.9
+* `ubuntu 20.04`
+  
+You can try different versions but this is not recommended.  
+Radix itself only supports Ubuntu 20.04.  
+This repo will not work on other distros.  
 
 Role Variables
 --------------
-
 The docker_install boolean (true/false) controls whether the docker install method will be used, or not.
 `docker_install: <bool>`
 
@@ -41,11 +38,10 @@ The docker-compose command will succeed but the core container will keep restart
 
 License
 -------
-
 * GPLv2
 
 Author Information
 ------------------
 
-* info@staradix.com
+* [info@staradix.com](mailto://info@staradix.com)
 * https://staradix.com
