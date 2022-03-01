@@ -1,26 +1,23 @@
 ---
 # Run basic preps for the installation
-- name: Ensure radix_user directory exists in radix_user homedir
+- name: Ensure radixdlt directory exists in radix_user homedir
   ansible.builtin.file:
-    path: "/home{{ radix_user }}/{{ radix_user }}"
+    path: "/home/{{ radix_user }}/radixdlt"
     state: directory
-    mode: '0640'
     owner: "{{ radix_user }}"
     group: "{{ radix_user }}"
 
-- name: Ensure radix_user directory exists in radix_user homedir
+- name: Ensure node-config directory exists in radix_user homedir
   ansible.builtin.file:
-    path: "/home{{ radix_user }}/node-config"
+    path: "/home/{{ radix_user }}/node-config"
     state: directory
-    mode: '0640'
     owner: "{{ radix_user }}"
     group: "{{ radix_user }}"
 
 - name: Download docker-compose file
   get_url:
     url: "{{ compose_url }}"
-    dest: "/home{{ radix_user }}/{{ radix_user }}/radix-fullnode-compose.yml"
-    mode: '0640'
+    dest: "/home/{{ radix_user }}/radixdlt/radix-fullnode-compose.yml"
     owner: "{{ radix_user }}"
     group: "{{ radix_user }}"
   
@@ -30,7 +27,7 @@
     keep_volumes: no
     detach: yes
     volumes: 
-      - "/home{{ radix_user }}/{{radix_user}}:/keygen/key"
+      - "/home/{{ radix_user }}/radixdlt:/keygen/key"
     image: "radixdlt/keygen:{{ keystore_container_version }}"
     command: ["--keystore=/keygen/key/node-keystore.ks", "--password={{ radix_keystore_password }}"]
   when: 
@@ -42,13 +39,15 @@
     name: radix_keystore
     keep_volumes: no
     detach: yes
+    volumes: 
+      - "/home/{{ radix_user }}/radixdlt:/keygen/key"
     image: "radixdlt/keygen:{{ keystore_container_version }}"
-    command: ["--keystore=/keygen/key/node-keystore.ks", "--password={{ keystore_password }}"]
+    command: ["--keystore=/keygen/key/node-keystore.ks", "--password={{ radix_keystore_password }}"]
   when: keystore_password is defined
 
 - name: Set 0644 permissions on keystore file
   ansible.builtin.file:
-    path: "/home{{ radix_user }}/{{ radix_user }}/node-keystore.ks"
+    path: "/home/{{ radix_user }}/radixdlt/node-keystore.ks"
     state: file
     mode: '0644'
     owner: "{{ radix_user }}"
@@ -56,7 +55,7 @@
 
 - name: Set 0644 permissions on keystore file
   ansible.builtin.file:
-    path: "/home{{ radix_user }}/node-config"
+    path: "/home/{{ radix_user }}/node-config"
     state: directory
     mode: '0644'
     owner: "{{ radix_user }}"
@@ -64,8 +63,8 @@
 
 - name: Create a symbolic link
   ansible.builtin.file:
-    src: "/home{{ radix_user }}/{{ radix_user }}/node-keystore.ks"
-    dest: "/home{{ radix_user }}/node-config/node-keystore.ks"
+    src: "/home/{{ radix_user }}/radixdlt/node-keystore.ks"
+    dest: "/home/{{ radix_user }}/node-config/node-keystore.ks"
     owner: "{{ radix_user }}"
     group: "{{ radix_user }}"
     state: link
@@ -104,8 +103,11 @@
     command: ["htpasswd", "-bc", "/secrets/htpasswd.metrics", "metrics", "{{ radix_metrics_password }}"]
   when: new_node == "yes"
 
-- name: Run `docker-compose up` again
+- name: Run `docker-compose up`
   community.docker.docker_compose:
-    project_src: "/home{{ radix_user }}/{{ radix_user }}"
+    project_src: "/home/{{ radix_user }}/radixdlt"
     build: no
+    files: "radix-fullnode-compose.yml"
   register: output
+  become: yes
+  become_user: root
