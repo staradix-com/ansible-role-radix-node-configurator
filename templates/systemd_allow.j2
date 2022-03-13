@@ -1,0 +1,5 @@
+{{ radix_user }} ALL= NOPASSWD: /bin/systemctl enable radixdlt-node.service
+{{ radix_user }} ALL= NOPASSWD: /bin/systemctl restart radixdlt-node.service
+{{ radix_user }} ALL= NOPASSWD: /bin/systemctl stop radixdlt-node.service
+{{ radix_user }} ALL= NOPASSWD: /bin/systemctl start radixdlt-node.service
+{{ radix_user }} ALL= NOPASSWD: /bin/systemctl reload radixdlt-node.service
