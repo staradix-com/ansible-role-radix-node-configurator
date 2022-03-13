@@ -14,6 +14,9 @@ docker_packages:
 
 systemd_packages:
   - "openjdk-17-jdk"
+  - "apache2-utils"
+  - "nginx"
+  - "openssl"
 
 radix_packages:
   - "wget"
