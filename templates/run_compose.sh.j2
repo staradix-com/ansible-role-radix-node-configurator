@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+if [ "$(whoami)" != "{{ radix_user }}"]; then
+    sudo su "{{ radix_user }}"
+fi
+
+cd ${HOME}/radixdlt && \
+source ~/.bash_aliases && \
+docker-compose -f radix-fullnode-compose.yml up -d
