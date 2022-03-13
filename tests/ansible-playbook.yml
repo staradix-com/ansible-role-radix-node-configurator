@@ -3,4 +3,5 @@
   gather_facts: true
 
   roles:
+    - { role: "geerlingguy.docker", become: true }
     - { role: "stefanfluit.ansible_role_radix_node_configurator", become: true }
