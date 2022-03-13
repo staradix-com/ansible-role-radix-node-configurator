@@ -1,1 +1,214 @@
 ---
+- name: Add sudoers file for radix user
+  template:
+    src: "templates/systemd_allow.j2"
+    dest: "/etc/sudoers.d/{{ radix_user }}"
+    mode: 0440
+    owner: root
+    group: root
+
+- name: Create directories for Radix
+  file:
+    path: "{{ item }}"
+    owner: "{{ radix_user }}"
+    group: "{{ radix_user }}"
+    state: directory
+  with_items:
+    - "/etc/radixdlt"
+    - "/etc/radixdlt/node"
+    - "/etc/radixdlt/node/secrets"
+    - "/var/cache/nginx/radixdlt-hot"
+    - "/etc/nginx/secrets"
+
+- name: Get url for radix node
+  set_fact: 
+    radixdlt_url: curl -s https://api.github.com/repos/radixdlt/radixdlt/releases/latest | grep browser_download_url | cut -d '"' -f 4 
+
+- name: Download and extract radixdlt
+  ansible.builtin.unarchive:
+    src: "{{ radixdlt_url }}"
+    dest: "/etc/radixdlt/node"
+    remote_src: yes
+
+- name: Create the Keys
+  ansible.builtin.shell: ./bin/keygen --keystore=secrets/node-keystore.ks --password="{{ radix_node_password }}"
+  args:
+    chdir: "/etc/radixdlt/node"
+
+- name: Copy radix_env to /etc/radixdlt/node/secrets/environment
+  template:
+    src: "templates/radix_env.j2"
+    dest: "/etc/radixdlt/node/secrets/environment"
+    mode: 0600
+    remote_src: true
+    owner: "{{ radix_user }}"
+    group: "{{ radix_user }}"
+
+- name: Set network ID for mainnet
+  set_fact:
+    network_id: "1"
+  when:
+    - radix_network_code == "m"
+
+- name: Set network ID for stokenet
+  set_fact:
+    network_id: "2"
+  when:
+    - radix_network_code == "s"
+
+- name: Copy the node configuration file
+  template:
+    src: "templates/node_configuration.j2"
+    dest: "/etc/radixdlt/node/default.config"
+    mode: 0600
+    remote_src: true
+    owner: "{{ radix_user }}"
+    group: "{{ radix_user }}"
+
+- name: Copy the systemd configuration file
+  template:
+    src: "templates/radixdlt-node.service.j2"
+    dest: "/etc/systemd/system/radixdlt-node.service"
+    mode: 0644
+    remote_src: true
+    owner: "{{ radix_user }}"
+    group: "{{ radix_user }}"
+
+- name: Ensure Radix is running
+  service:
+    name: radixdlt-node
+    enabled: yes
+    daemon_reload: yes
+    state: started
+
+- name: Delete all nginx default sites
+  file: 
+    path: "/etc/nginx/sites-enabled/*"
+    state: absent
+
+- name: Get url for nginx config
+  set_fact: 
+    nginx_conf_url: curl -s https://api.github.com/repos/radixdlt/radixdlt-nginx/releases/latest | grep browser_download_url | cut -d '"' -f 4 
+
+- name: Download and extract Nginx config file
+  ansible.builtin.unarchive:
+    src: "{{ nginx_conf_url }}"
+    dest: "/tmp"
+    remote_src: yes
+
+- name: Copy nginx configuration files
+  copy:
+    src: "/tmp/nginx-fullnode.conf"
+    dest: "/etc/nginx/nginx.conf"
+    mode: 0644
+    owner: "{{ radix_user }}"
+    group: "{{ radix_user }}"
+
+- name: Copy radixdlt configuration files
+  copy:
+    src: "/tmp/conf.d/*"
+    dest: "/etc/nginx/"
+    mode: 0644
+    owner: "{{ radix_user }}"
+    group: "{{ radix_user }}"
+
+- openssl_privatekey:
+    path: "/etc/nginx/secrets/server.csr"
+    size: 2048 
+
+- openssl_csr:
+    path: "/etc/nginx/secrets/server.csr"
+    privatekey_path: "/etc/nginx/secrets/server.key"
+
+- name: Generate a Self Signed OpenSSL certificate
+  openssl_certificate:
+    path: "/etc/nginx/secrets/server.pem"
+    privatekey_path: "/etc/nginx/secrets/server.key"
+    csr_path: "/etc/nginx/secrets/server.csr"
+    provider: selfsigned
+    subject_alt_name:
+      - localhost
+
+- name: Generate DH Parameters
+  community.crypto.openssl_dhparam:
+    path: "/etc/nginx/secrets/dhparam.pem"
+    size: 2048
+
+- name: Add Nginx admin password
+  community.general.htpasswd:
+    path: "/etc/nginx/secrets/htpasswd.admin"
+    name: "admin"
+    password: "{{ radix_nginx_password }}"
+    owner: "{{ radix_user }}"
+    group: "{{ radix_user }}"
+    mode: 0640
+
+- name: Add Nginx superadmin password
+  community.general.htpasswd:
+    path: "/etc/nginx/secrets/htpasswd.superadmin"
+    name: "admin"
+    password: "{{ radix_nginx_superadmin_password }}"
+    owner: "{{ radix_user }}"
+    group: "{{ radix_user }}"
+    mode: 0640
+
+- name: Add Nginx metrics admin password
+  community.general.htpasswd:
+    path: "/etc/nginx/secrets/htpasswd.metrics"
+    name: "admin"
+    password: "{{ radix_metrics_password }}"
+    owner: "{{ radix_user }}"
+    group: "{{ radix_user }}"
+    mode: 0640
+
+- name: Start nginx
+  service:
+    name: nginx
+    enabled: yes
+    daemon_reload: yes
+    state: started
+
+- name: Ensure API responds the way we expect it to
+  uri:
+    url: "https://localhost/key/list"
+    user: "superadmin"
+    password: "{{ radix_nginx_superadmin_password }}"
+    method: POST
+    body: "{{ lookup('file','issue.json') }}"
+    force_basic_auth: yes
+    status_code: 201
+    body_format: json
+  register: radix_api_result
+  ignore_errors: yes
+
+- name: Restart service when API does not respond
+  service:
+    name: radixdlt-node
+    enabled: yes
+    state: restarted
+  when: radix_api_result.rc != 0
+
+- name: Restart Nginx when API does not respond
+  service:
+    name: nginx
+    enabled: yes
+    state: restarted
+  when: radix_api_result.rc != 0
+
+- name: Ensure API responds the way we expect it to
+  uri:
+    url: "https://localhost/key/list"
+    user: "superadmin"
+    password: "{{ radix_nginx_superadmin_password }}"
+    method: POST
+    body: "{{ lookup('file','issue.json') }}"
+    force_basic_auth: yes
+    status_code: 201
+    body_format: json
+  register: radix_api_result_2
+  ignore_errors: yes
+
+- name: Debug output
+  debug:
+    msg: "{{ radix_api_result_2.msg }}"
+  when: debug_output
