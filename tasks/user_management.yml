@@ -50,6 +50,7 @@
     dest: "/etc/sudoers.d/{{ radix_user }}"
     mode: 0440
     content: "{{ radix_user }} ALL=(ALL) NOPASSWD: ALL"
+  when: docker_install
 
 - name: Check if .bash_aliases exists
   stat:
