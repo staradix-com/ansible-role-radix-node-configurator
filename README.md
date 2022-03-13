@@ -5,6 +5,13 @@ This is a work in progress.
 
 Note; as of v.1.2, systemd tasks are added but not tested (yet).
 
+Releases explained
+------------
+There are three levels of releases:
+* alpha     - Implemented but not tested. Now the case for systemd support.
+* beta      - Implemented and tested. Only implemented for platforms that are defined in `meta/main.yml`
+* stable    - Implemented, tested, and verified idempotent.
+
 Requirements
 ------------
 * `ubuntu 20.04`
@@ -83,8 +90,7 @@ Local role testing
 -------
 * You can test the role with Vagrant and VirtualBox. Both need to be installed.  
 * The command is: `VAGRANT_EXPERIMENTAL="cloud_init,disks" vagrant up`  
-* You need at least: 150GB Disk space, 16GB of RAM free and 4vCPUs.
-* The docker-compose command will succeed but the core container will keep restarting.
+* You need at least: 200GB Disk space, 16GB of RAM free and 4vCPUs.
 
 License
 -------
