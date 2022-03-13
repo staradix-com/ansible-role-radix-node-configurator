@@ -4,6 +4,7 @@ Configures a Radix node.
 
 Releases explained
 ------------
+
 There are three levels of releases:
 * alpha     - Implemented but not tested.
 * beta      - Implemented and tested. Only implemented for platforms that are defined in `meta/main.yml`
@@ -26,10 +27,12 @@ This roll will not work on other distros for now.
 
 Installing the role
 ------------
+
 * `ansible-galaxy install stefanfluit.ansible_role_radix_node_configurator`
 
 Role Variables
 ------------
+
 Good to know: A boolean means that valid values are `true` or `false`.
 
 The docker_install boolean (true/false) controls whether the docker install method will be used, or not.
@@ -81,11 +84,13 @@ Must be set if new_node is set to "no":
 
 Dependencies
 ------------
+
 * You can find all dependencies in the requirements.txt file.  
 * Install them with: `pip3 install -r requirements.txt`
 
 Example Playbook
 ----------------
+
 * You can find an example playbook the `tests` directory.
 * `tests/ansible-playbook.yml`
 
@@ -99,9 +104,11 @@ Local role testing
 
 License
 -------
+
 * GPLv2
 
 Author Information
 ------------------
+
 * [info@staradix.com](mailto://info@staradix.com)
 * https://staradix.com
