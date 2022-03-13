@@ -95,6 +95,7 @@ Local role testing
 * You can test the role with Vagrant and VirtualBox. Both need to be installed.  
 * The command is: `VAGRANT_EXPERIMENTAL="cloud_init,disks" vagrant up`  
 * You need at least: 200GB Disk space, 16GB of RAM free and 4vCPUs.
+* Note; I use the Vagrant box only to run the playbooks on, usually, a VPS at Hetzner or AWS.
 
 License
 -------
