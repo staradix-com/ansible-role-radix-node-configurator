@@ -10,7 +10,7 @@ update_ubuntu: true
 # Show docker/systemd output
 debug_output: true
 
-data_dir: "/opt/radix"
+data_dir: "/opt/radixdlt"
 radix_user: "radixdlt"
 
 ufw_firewall: true
