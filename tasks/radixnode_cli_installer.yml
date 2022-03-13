@@ -13,6 +13,7 @@
     src: "/tmp/radixnode"
     dest: "/usr/local/bin/radixnode"
     mode: "a+x"
+    remote_src: true
 
 - name: Make sure there is no old package in /tmp
   file:
