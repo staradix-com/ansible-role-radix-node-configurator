@@ -18,6 +18,7 @@
 - name: Create radix_user, without Docker and sudo group membership
   user:
     name: "{{ radix_user }}"
+    groups: "radixdlt"
     state: present
     shell: "/bin/bash"
   when: systemd_install
