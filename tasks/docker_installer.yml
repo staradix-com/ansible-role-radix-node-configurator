@@ -14,12 +14,33 @@
     owner: "{{ radix_user }}"
     group: "{{ radix_user }}"
 
-- name: Download docker-compose file
-  get_url:
-    url: "{{ compose_url }}"
+- name: Copy compose file to radix_user homedir
+  template:
+    src: "templates/docker-compose.yml.j2"
     dest: "/home/{{ radix_user }}/radixdlt/radix-fullnode-compose.yml"
+    remote_src: false
     owner: "{{ radix_user }}"
     group: "{{ radix_user }}"
+
+- name: Ensure override dir is available
+  ansible.builtin.file:
+    path: "/etc/systemd/system/docker.service.d"
+    state: directory
+
+- name: Copy override.conf to host
+  template:
+    src: "templates/override.conf"
+    dest: "/etc/systemd/system/docker.service.d/override.conf"
+    remote_src: false
+
+- name: Just force systemd to reread configs (2.4 and above)
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Ensure docker is running
+  service:
+    name: docker
+    state: started
   
 - name: Create node-keystore.ks file when keystore_password is NOT defined
   docker_container:
@@ -33,6 +54,8 @@
   when: 
     - keystore_password is not defined
     - new_node == "yes"
+  become: yes
+  become_user: "{{ radix_user }}"
 
 - name: Create node-keystore.ks file when keystore_password IS defined
   docker_container:
@@ -44,6 +67,8 @@
     image: "radixdlt/keygen:{{ keystore_container_version }}"
     command: ["--keystore=/keygen/key/node-keystore.ks", "--password={{ radix_keystore_password }}"]
   when: keystore_password is defined
+  become: yes
+  become_user: "{{ radix_user }}"
 
 # Add passwords for new install
 - name: Add nginx-admin-password
@@ -56,6 +81,8 @@
     image: "radixdlt/htpasswd:{{ keystore_htpasswd_version }}"
     command: ["htpasswd", "-bc", "/secrets/htpasswd.admin", "admin", "{{ radix_nginx_password }}"]
   when: new_node == "yes"
+  become: yes
+  become_user: "{{ radix_user }}"
 
 - name: Add nginx-superadmin-password
   docker_container:
@@ -67,6 +94,8 @@
     image: "radixdlt/htpasswd:{{ keystore_htpasswd_version }}"
     command: ["htpasswd", "-bc", "/secrets/htpasswd.superadmin", "superadmin", "{{ radix_nginx_superadmin_password }}"]
   when: new_node == "yes"
+  become: yes
+  become_user: "{{ radix_user }}"
 
 - name: Add nginx-metrics-password
   docker_container:
@@ -78,6 +107,8 @@
     image: "radixdlt/htpasswd:{{ keystore_htpasswd_version }}"
     command: ["htpasswd", "-bc", "/secrets/htpasswd.metrics", "metrics", "{{ radix_metrics_password }}"]
   when: new_node == "yes"
+  become: yes
+  become_user: "{{ radix_user }}"
 
 - name: Set 0644 permissions on keystore file
   ansible.builtin.file:
@@ -96,14 +127,40 @@
     src: "/home/{{ radix_user }}/radixdlt/node-keystore.ks"
     dest: "/home/{{ radix_user }}/node-config/node-keystore.ks"
     state: link
-  when: new_node == "yes"
 
-- name: Run `docker-compose up`
-  community.docker.docker_compose:
-    project_src: "/home/{{ radix_user }}/radixdlt"
-    build: no
-    files: "radix-fullnode-compose.yml"
-  register: output
-  become: yes
-  become_user: root
-  when: new_node == "yes"
+- name: Create a symbolic link
+  ansible.builtin.file:
+    src: "/home/{{ radix_user }}/radixdlt/node-keystore.ks"
+    dest: "/home/{{ radix_user }}/node-keystore.ks"
+    state: link
+
+- user: name={{ radix_user }}
+- name: reset ssh connection to allow user changes to affect 'current login user'
+  meta: reset_connection
+
+- name: Create .env file for docker-compose
+  template:
+    src: "templates/.env.j2"
+    dest: "/home/{{ radix_user }}/radixdlt/.env"
+    owner: "{{ radix_user }}"
+    remote_src: false
+
+- name: Push script to server
+  template:
+    src: "templates/run_compose.sh.j2"
+    dest: "/home/{{ radix_user }}/run.sh"
+    owner: "{{ radix_user }}"
+    mode: +x
+    remote_src: false
+
+- name: Run docker-compose up
+  shell: "/bin/bash /home/{{ radix_user }}/run.sh"
+  become: true
+  become_user: "{{ radix_user }}"
+  register: result_compose
+
+- name: Debug output
+  debug:
+    msg: "{{ result_compose }}"
+  when:
+    - debug_output
