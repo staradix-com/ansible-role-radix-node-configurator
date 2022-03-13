@@ -8,9 +8,16 @@ Note; as of v.1.2, systemd tasks are added but not tested (yet).
 Releases explained
 ------------
 There are three levels of releases:
-* alpha     - Implemented but not tested. Now the case for systemd support.
+* alpha     - Implemented but not tested.
 * beta      - Implemented and tested. Only implemented for platforms that are defined in `meta/main.yml`
 * stable    - Implemented, tested, and verified idempotent.
+
+Current releases:
+------------
+
+Current release: V.1.2
+* docker support: beta
+* systemd support: alpha
 
 Requirements
 ------------
@@ -18,7 +25,7 @@ Requirements
   
 You can try different versions but this is not recommended.  
 Radix itself only supports Ubuntu 20.04.  
-This repo will not work on other distros.  
+This roll will not work on other distros for now.  
 
 Installing the role
 ------------
