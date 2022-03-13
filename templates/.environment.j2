@@ -2,4 +2,6 @@ export NGINX_ADMIN_PASSWORD="{{ radix_nginx_password }}"
 export NGINX_SUPERADMIN_PASSWORD="{{ radix_nginx_superadmin_password }}"
 
 export RADIXDLT_NETWORK_NODE="{{ radix_network_node }}"
-export RADIXDLT_NODE_KEY_PASSWORD={{ radix_keystore_password }}
+export RADIXDLT_NODE_KEY_PASSWORD="{{ radix_keystore_password }}"
+
+export NODE_HOST_IP_OR_NAME="{{ ipify_public_ip }}"
