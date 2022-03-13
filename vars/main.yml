@@ -19,31 +19,23 @@ radix_node_eu_west: "radix://rn1qtk3g0a2ra663wyua0l4720vfzdje9uqsdzgzjet5w9dhspk
 radix_node_us_east: "radix://rn1qtq336a2nn2269fjes53pynwlytrv0katm6uzlfcyl6m7yscac5g7mh8prw@23.22.58.54"
 
 docker_packages:
-  - "apt-transport-https"
-  - "ca-certificates"
-  - "curl"
-  - "software-properties-common"
-  - "pwgen"
-  - "acl"
   - "python3-pip"
 
 systemd_packages:
-  - "apt-transport-https"
-  - "ca-certificates"
-  - "curl"
-  - "software-properties-common"
-  - "pwgen"
-  - "acl"
   - "openjdk-17-jdk"
 
 radix_packages:
-  - "docker.io"
-  - "docker-compose"
-  - "containerd"
   - "wget"
   - "unzip" 
   - "docker-compose" 
   - "rng-tools"
+  - "acl"
+  - "pwgen"
+  - "software-properties-common"
+  - "curl"
+  - "apt-transport-https"
+  - "ca-certificates"
+  - "curl"
 
 pip_packages:
   - "docker"
