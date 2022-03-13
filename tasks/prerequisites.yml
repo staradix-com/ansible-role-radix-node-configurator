@@ -1,0 +1,14 @@
+---
+- name: Wait for system to become reachable
+  wait_for_connection:
+
+- name: Gather facts for first time
+  setup:
+
+- name: Ensure rngd is installed
+  package:
+    name: rng-tools
+    state: present
+
+- name: Set rngd device
+  ansible.builtin.command: rngd -r /dev/random
