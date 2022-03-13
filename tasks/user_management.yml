@@ -73,3 +73,11 @@
     dest: "/home/{{ radix_user }}/.bash_aliases_prep"
     owner: "{{ radix_user }}"
   when: stat_result.stat.exists
+
+# Append to bash_rc
+- name: Append to .bash_aliases
+  lineinfile:
+    dest: "/home/{{ radix_user }}/.bash_aliases"
+    line: "source /home/{{ radix_user }}/.bash_aliases_prep"
+    state: present
+  when: stat_result.stat.exists
