@@ -4,16 +4,30 @@
     update_cache: yes
     cache_valid_time: 3600
 
-- name: Ensure packages are installed using apt
+- name: Ensure docker packages are installed using apt
   apt:
-    name: "{{ packages }}"
+    name: "{{ docker_packages }}"
     state: present
   when:
     - not update_ubuntu
+    - docker_install
 
-- name: Ensure packages are in latest state
+- name: Ensure systemd packages are installed using apt
   apt:
-    name: "{{ packages }}"
+    name: "{{ systemd_packages }}"
+    state: present
+  when:
+    - not update_ubuntu
+    - systemd_install
+
+- name: Ensure docker packages are in latest state
+  apt:
+    name: "{{ docker_packages }}"
+    state: latest
+
+- name: Ensure systemd packages are in latest state
+  apt:
+    name: "{{ systemd_packages }}"
     state: latest
 
 - name: Install reccomended packages
@@ -40,14 +54,20 @@
     update_cache: yes
     state: present
   delegate_to: localhost
+  when: 
+    - docker_install
 
 - name: Ensure pip packages are present on localhost
   pip:
     name: "{{ pip_packages }}"
     state: present
   delegate_to: localhost
+  when: 
+    - docker_install
 
 - name: Ensure pip packages are present on radix-node.
   pip:
     name: "{{ pip_packages }}"
     state: present
+  when: 
+    - docker_install
