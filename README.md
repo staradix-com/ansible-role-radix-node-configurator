@@ -1,9 +1,6 @@
 Radix Node Configurator
 =========
 Configures a Radix node.  
-This is a work in progress.
-
-Note; as of v.1.2, systemd tasks are added but not tested (yet).
 
 Releases explained
 ------------
