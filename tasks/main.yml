@@ -1,5 +1,8 @@
 ---
 # Run tasks
+- name: Run prerequisites
+  include_tasks: "prerequisites.yml"
+
 - name: Run checks on all variables
   include_tasks: "vars_validation.yml"
 
@@ -30,5 +33,6 @@
   include_tasks: "systemd_installer.yml"
   when: systemd_install
 
-# run the service
-# register?
+- name: Register as a validator node
+  include_tasks: "validator_node_registration.yml"
+  when: fullnode
