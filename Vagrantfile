@@ -16,12 +16,18 @@ Vagrant.configure("2") do |config|
       sudo apt-get install -y software-properties-common
       sudo apt-add-repository ppa:ansible/ansible -y
       sudo apt-get install -y ansible python3-pip ca-certificates curl gnupg lsb-release
+      echo "export PATH=\"$HOME/.local/bin:$PATH\"" >> ~/.bashrc
+      pip3 install --upgrade pip && pip3 install docker-compose
 
-      ansible-galaxy install geerlingguy.docker
-      ansible localhost -m include_role -a name=geerlingguy.docker
+      ansible-galaxy install geerlingguy.docker || true
       
       sudo cp /vagrant/roles/radix-node-configurator/tests/*  /vagrant
-      cd /vagrant && ansible-playbook test.yml -i inventory.yml
+      sudo chown -R vagrant:vagrant /vagrant
+      cp /vagrant/key /home/vagrant/.ssh/id_ed25519 && chown vagrant:vagrant /home/vagrant/.ssh/id_ed25519 && chmod 600 /home/vagrant/.ssh/id_ed25519
+      eval `ssh-agent -s` && ssh-add /home/vagrant/.ssh/id_ed25519
+
+      wget https://raw.githubusercontent.com/docker/docker-py/master/docker/errors.py -O /tmp/errors.py
+      sudo cp /tmp/errors.py /usr/local/lib/python3.8/dist-packages/docker/errors.py
     SCRIPT
 
     config.vm.provision "shell", inline: $script, privileged: false
