@@ -15,10 +15,9 @@
     shell: "/bin/bash"
   when: docker_install
 
-- name: Create radix_user, without Docker group membership
+- name: Create radix_user, without Docker and sudo group membership
   user:
     name: "{{ radix_user }}"
-    groups: "sudo"
     state: present
     shell: "/bin/bash"
   when: systemd_install
