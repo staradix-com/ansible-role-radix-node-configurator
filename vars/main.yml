@@ -1,21 +1,12 @@
 ---
 # vars file for radix-node-configurator
-compose_url: "https://raw.githubusercontent.com/radixdlt/node-runner/1.1.1/node-runner-cli/release_ymls/radix-fullnode-compose.yml"
-
 keystore_container_version: "1.1.0"
 keystore_htpasswd_version: "v1.0.0"
 
 # Nodes
-# Asia Pacific
 radix_node_asia_pacific: "radix://rn1qg54vufz29c5hcwqxuv4pr60f4fsq6ds0qpa7qnrchdwnapkw6qcxymhy7l@3.109.57.223"
-
-# Asia Pacific South
 radix_node_asia_pacific_south: "radix://rn1q2jt0jswv3lpct8tavr5tvlg2kv25f26x7w8kf6dz2hp4pu9cwq4we9tm5f@13.238.198.54"
-
-# EU West
 radix_node_eu_west: "radix://rn1qtk3g0a2ra663wyua0l4720vfzdje9uqsdzgzjet5w9dhspkaywnjal6dv6@52.212.46.210"
-
-# US East
 radix_node_us_east: "radix://rn1qtq336a2nn2269fjes53pynwlytrv0katm6uzlfcyl6m7yscac5g7mh8prw@23.22.58.54"
 
 docker_packages:
