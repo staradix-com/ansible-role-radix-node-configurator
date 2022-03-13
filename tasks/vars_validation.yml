@@ -1,9 +1,12 @@
 ---
 - name: Fail if not Ubuntu 20.04
   set_fact:
-    distro: "{{ ansible_distribution }}"
-  when: ansible_os_family != 'Debian'
-  failed_when: ansible_os_family != 'Debian'
+    distro: "{{ ansible_distribution_version }}"
+
+- name: Fail if distribution version does not equal to 20.04
+  fail:
+    msg: "This Ansible role is only supported on Ubuntu 20.04"
+  when: distro != "20.04"
 
 - name: Fail if fullnode and archive are both set to true.
   fail:
