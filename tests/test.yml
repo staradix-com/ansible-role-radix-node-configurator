@@ -1,5 +1,9 @@
 ---
-- hosts: localhost
+- hosts: all
+  gather_facts: true
+  vars_files:
+    - docker.yml
 
   roles:
+    - { role: "geerlingguy.docker", become: true }
     - { role: radix-node-configurator, become: true }
